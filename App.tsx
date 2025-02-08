@@ -1,277 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from 'react-native';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import StartScreen from './StartScreen';
+import HomeScreen from './HomeScreen';
+import ConnectionScreen from './ConnectionScreen';
+import CameraScreen from './CameraScreen';
+import TestScreen from './TestScreen';
 
-const MainScreen = () => {
-  const [flame, setFlame] = useState(70);
-  const [humidity, setHumidity] = useState(50);
-  const [temperature, setTemperature] = useState(30);
-  const [gaz, setGaz] = useState(85);
+type RootStackParamList = {
+  Start: undefined;
+  Home: undefined;
+  Connection: undefined;
+  Camera: undefined;
+  Test: undefined;
+};
 
-  const handleCameraPress = () => {
-    Alert.alert('Camera', 'Camera button pressed!');
-  };
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  const handleLocationPress = () => {
-    Alert.alert('Location', 'Location button pressed!');
-  };
-
+const App = () => {
   return (
-    <View style={styles.container}>
-      {/* Top Bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconContainer}>
-          <Text style={styles.iconText}>Wi-Fi</Text>
-        </TouchableOpacity>
-        <Image source={require('./assets/images/logo.png')} style={styles.oogo} />
-        <TouchableOpacity style={styles.iconContainer}>
-          <Text style={styles.iconText}>Info</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Map */}
-
-      {/* Sensor Cards */}
-      <View style={styles.cardsContainer}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Flame</Text>
-          <Text>   </Text>
-          <AnimatedCircularProgress
-            size={100}
-            width={10}
-            fill={flame}
-            tintColor="#90f206"
-            backgroundColor="#3d5875"
-            rotation={-0}
-          >
-            {() => (
-              <Image
-                source={require('./assets/images/flame.png')}
-                style={styles.logo}
-              />
-            )}
-          </AnimatedCircularProgress>
-          <Text>   </Text>
-          <Text style={styles.progressText}>{Math.round(flame)}%</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Humidity</Text>
-          <Text>   </Text>
-          <AnimatedCircularProgress
-            size={100}
-            width={10}
-            fill={humidity}
-            tintColor="#90f206"
-            backgroundColor="#3d5875"
-            rotation={-0}
-          >
-            {() => (
-              <Image
-                source={require('./assets/images/humi.png')}
-                style={styles.logo}
-              />
-            )}
-          </AnimatedCircularProgress>
-          <Text>   </Text>
-          <Text style={styles.progressText}>{Math.round(humidity)}%</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Temperature</Text>
-          <Text>   </Text>
-          <AnimatedCircularProgress
-            size={100}
-            width={10}
-            fill={temperature}
-            tintColor="#90f206"
-            backgroundColor="#3d5875"
-            rotation={-0}
-          >
-            {() => (
-              <Image
-                source={require('./assets/images/temp.png')}
-                style={styles.logo}
-              />
-            )}
-          </AnimatedCircularProgress>
-          <Text>   </Text>
-          <Text style={styles.progressText}>{Math.round(temperature)} °C</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Gaz</Text>
-          <Text>   </Text>
-          <AnimatedCircularProgress
-            size={100}
-            width={10}
-            fill={gaz}
-            tintColor="#90f206"
-            backgroundColor="#3d5875"
-            rotation={-0}
-          >
-            {() => (
-              <Image
-                source={require('./assets/images/gas.png')}
-                style={styles.logo}
-              />
-            )}
-          </AnimatedCircularProgress>
-          <Text>   </Text>
-          <Text style={styles.progressText}>{Math.round(gaz)}%</Text>
-        </View>
-        <TouchableOpacity style={[styles.card, styles.button2]} onPress={handleCameraPress}>
-          <Text style={styles.cardTitle}>Camera</Text>
-          <Text>   </Text>
-          <AnimatedCircularProgress
-            size={100}
-            width={10}
-            fill={100}
-            tintColor="#90f206"
-            backgroundColor="#3d5875"
-            rotation={-0}
-          >
-            {() => (
-              <Image
-                source={require('./assets/images/camera.png')}
-                style={styles.logo}
-              />
-            )}
-          </AnimatedCircularProgress>
-          <Text>   </Text>
-          <Text>   </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.button2]} onPress={handleLocationPress}>
-          <Text style={styles.cardTitle}>Location</Text>
-          <Text>   </Text>
-          <AnimatedCircularProgress
-            size={100}
-            width={10}
-            fill={100}
-            tintColor="#90f206"
-            backgroundColor="#3d5875"
-            rotation={-0}
-          >
-            {() => (
-              <Image
-                source={require('./assets/images/location.png')}
-                style={styles.logo}
-              />
-            )}
-          </AnimatedCircularProgress>
-          <Text>   </Text>
-          <Text>   </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Bottom Buttons */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomButton}>
-          <Text style={styles.bottomButtonText}>Settings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomButton}>
-          <Text style={styles.bottomButtonText}>Emergency</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Start" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Start" component={StartScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Connection" component={ConnectionScreen} />
+        <Stack.Screen name="Camera" component={CameraScreen} />
+        <Stack.Screen name="Test" component={TestScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#303030',
-    padding: 10,
-  },
-  oogo: {
-    width: 125,
-    height: 50,
-    marginRight: 0,
-  },
-  logo: {
-    width: 50,
-    height: 50,
-    marginRight: 0,
-  },
-  iconContainer: {
-    padding: 10,
-  },
-  iconText: {
-    color: '#90f206',
-    fontSize: 14,
-  },
-  map: {
-    width: '100%',
-    height: 200,
-  },
-  title: {
-    color: '#90f206',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  cardsContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    padding: 10,
-  },
-  card: {
-    width: '30%',
-    backgroundColor: '#1e1e1e',
-    margin: 5,
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  button: {
-    backgroundColor: '#90f206',
-  },
-  button2: {
-    backgroundColor: '#1e1e1e',
-    color: '#90f206',
-  },
-  cardTitle: {
-    color: '#90f206',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  progressText: {
-    color: '#90f206',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#303030',
-    padding: 10,
-  },
-  bottomButton: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 10,
-    marginHorizontal: 5,
-    backgroundColor: '#90f206',
-    borderRadius: 10,
-  },
-  bottomButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
-});
-
-export default MainScreen;
+export default App;
