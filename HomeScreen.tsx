@@ -21,14 +21,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 
 const HomeScreen = ({ navigation }: Props) => {
-  const [flame, setFlame] = useState(70);
+  const [isThereFlame, setisThereFlame] = useState(1);
   const [humidity, setHumidity] = useState(50);
   const [temperature, setTemperature] = useState(30);
   const [gaz, setGaz] = useState(85);
-
-  const handleCameraPress = () => {
-    Alert.alert('Camera', 'Camera button pressed!');
-  };
 
   const handleLocationPress = () => {
     Alert.alert('Location', 'Location button pressed!');
@@ -63,7 +59,7 @@ const HomeScreen = ({ navigation }: Props) => {
           <AnimatedCircularProgress
             size={100}
             width={10}
-            fill={flame}
+            fill={(isThereFlame === 1 ? 100 : 0)}
             tintColor="#90f206"
             backgroundColor="#3d5875"
             rotation={-0}
@@ -76,7 +72,7 @@ const HomeScreen = ({ navigation }: Props) => {
             )}
           </AnimatedCircularProgress>
           <Text>   </Text>
-          <Text style={styles.progressText}>{Math.round(flame)}%</Text>
+          <Text style={styles.progressText}>{(isThereFlame === 1 ? 'True' : 'false')}</Text>
         </View>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Humidity</Text>
