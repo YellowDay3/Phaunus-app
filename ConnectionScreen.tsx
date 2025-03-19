@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { getData, saveData } from './storage';
 
 type RootStackParamList = {
     Start: undefined;
@@ -15,14 +16,44 @@ const ConnectionScreen = ({ navigation }: Props) => {
   const [ipAddress, setIpAddress] = useState('');
   const [isConnected, setIsConnected] = useState(false);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = await getData('Url');
+      setIpAddress(url);
+      if (url === '') {setIsConnected(false);}
+      else {setIsConnected(true);}
+    };
+    fetchData();
+  }, []);
+
   const handleConnect = () => {
     if (ipAddress.trim() !== '') {
-      setIsConnected(true);
+      //setIsConnected(true);
+      for (let index = 0; index < 5 && isConnected === false; index++) {
+        const fetchData = async () => {
+          try {
+            const response = await fetch('http://' + ipAddress.trim() + '/check');
+            //console.error(ipAddress.trim());
+            const result = await response.text();
+            console.log(response.text());
+            if (result === '240') {
+              setIsConnected(true);
+              saveData('Url', ipAddress.trim());
+            } else {
+              //console.error('Can not find the device');
+            }
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        };
+        fetchData();
+      }
     }
   };
 
   const handleDisconnect = () => {
     setIpAddress('');
+    saveData('Url', '');
     setIsConnected(false);
   };
 
@@ -45,7 +76,7 @@ const ConnectionScreen = ({ navigation }: Props) => {
         value={ipAddress}
         onChangeText={setIpAddress}
         editable={!isConnected}
-        placeholder=""
+        placeholder="192.168.0.0"
         placeholderTextColor="#a0a0a0"
       />
 
@@ -112,7 +143,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   connectedInput: {
-    backgroundColor: '#192618',
+    //backgroundColor: '#192618',
   },
   connectButton: {
     backgroundColor: '#A4E100',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import BackgroundTimer from 'react-native-background-timer';
+import { getData } from './storage';
 
 type RootStackParamList = {
   Start: undefined;
@@ -21,10 +23,97 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 
 const HomeScreen = ({ navigation }: Props) => {
-  const [isThereFlame, setisThereFlame] = useState(1);
-  const [humidity, setHumidity] = useState(50);
-  const [temperature, setTemperature] = useState(30);
-  const [gaz, setGaz] = useState(85);
+  const [isThereFlame, setisThereFlame] = useState(0);
+  const [humidity, setHumidity] = useState(0);
+  const [temperature, setTemperature] = useState(0);
+  const [gaz, setGaz] = useState(0);
+  const [url, setUrl] = useState('');
+  const [isStillConnected, setIsStillConnected] = useState(false);
+  const [intervalDuration, setIntervalDuration] = useState(15000);
+  const [failedAttempt, setFailedAttempt] = useState(0);
+
+  const resetStats = () => {
+    setisThereFlame(0);
+    setHumidity(0);
+    setTemperature(0);
+    setGaz(0);
+  };
+
+  const setInfo = useCallback(async () => {
+    if (!isStillConnected) {
+      resetStats();
+      return;
+    }
+    try {
+      const response = await fetch('http://' + url + '/getData');
+      const result = (await response.text()).toString();
+      console.log(result);
+      const [var1, var2, var3, var4] = result.split('::');
+      setisThereFlame(parseInt(var1));
+      setHumidity(parseInt(var2));
+      setTemperature(parseInt(var3));
+      setGaz(parseInt(var4));
+      setFailedAttempt(0);
+      setIntervalDuration(15000); // Set interval to 15s on success
+    } catch (error) {
+      console.log('No Url Detected');
+      setFailedAttempt(failedAttempt + 1);
+      if (failedAttempt > 6) {
+        resetStats();
+        console.log('Reset Stats');
+      }
+      setIntervalDuration(3000); // Set interval to 3s on failure
+    }
+  }, [isStillConnected, url, failedAttempt]);
+
+  useEffect(() => {
+    const intervalId = BackgroundTimer.setInterval(() => {
+      setInfo();
+    }, intervalDuration);
+
+    return () => {
+      BackgroundTimer.clearInterval(intervalId);
+    };
+  }, [intervalDuration, setInfo]);
+
+  useEffect(() => {
+      const fetchData = async () => {
+        const urlTemp = await getData('Url');
+        setUrl(urlTemp);
+        if (urlTemp === '') {setIsStillConnected(false);}
+        else {setIsStillConnected(true);}
+      };
+      fetchData();
+    }, []);
+
+  /*const setInfo = () => {
+    //setIsStillConnected(true);
+    if (isStillConnected === true) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch('http://' + url + '/getData');
+          //console.error(ipAddress.trim());
+          const result = (await response.text()).toString();
+          console.log(result);
+          const [var1, var2, var3, var4] = result.split('::');
+          setisThereFlame(parseInt(var1, 3));
+          setHumidity(parseInt(var2, 3));
+          setTemperature(parseInt(var3, 3));
+          setGaz(parseInt(var4, 3));
+          setTimer(5000);
+        } catch (error) {
+          console.log('No Url Detected');
+          //setIsStillConnected(false);
+          setTimer(1000);
+          resetStats();
+        }
+      };
+      fetchData();
+    } else {
+      resetStats();
+    }
+  };*/
+
 
   const handleLocationPress = () => {
     Alert.alert('Location', 'Location button pressed!');
